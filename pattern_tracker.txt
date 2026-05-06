@@ -1,0 +1,37 @@
+A string is said to contain a **rising pattern** when two consecutive numeric characters are found where the second digit is exactly 1 greater than the first. 
+Non-numeric characters are ignored during comparison.
+
+Write a function:
+```
+def pattern_tracker(string: str) -> int
+```
+The function should return the total count of consecutive digit pairs in the string where the next digit is exactly 1 greater than the previous.
+
+**Examples:**
+
+1.
+Input: `string = "1234"`
+Output: `3`
+Explanation: Pairs `(1,2)`, `(2,3)` and `(3,4)` all have a difference of 1.
+
+2.
+Input: `string = "a1b2c3"`
+Output: `2`
+Explanation: Non-numeric characters are skipped. Pairs `(1,2)` and `(2,3)` qualify.
+
+3.
+Input: `string = "9876"`
+Output: `0`
+Explanation: No pair has a rising difference of exactly 1.
+
+4.
+Input: `string = "135"`
+Output: `0`
+Explanation: Differences are 2, not 1.
+
+5.
+Input: `string = "abc"`
+Output: `0`
+Explanation: No numeric characters found.
+
+**Note:** Description based on exam logic, not a literal transcription.
