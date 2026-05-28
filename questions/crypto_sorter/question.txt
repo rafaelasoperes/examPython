@@ -12,7 +12,6 @@ Write a function:
 def crypto_sorter(words: List[str]) -> List[str]:
 
 
-
 Examples
 
 1.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-ExamShell-like Python Exam System
-Author: Rafael
+Exam Python Exam System
+Author: rafasilv
 """
 
 import os
@@ -38,13 +38,14 @@ class Exam:
         os.system('clear' if os.name != 'nt' else 'cls')
 
     def print_banner(self):
+        level_display = self.current_level or 'Todas'
         banner = f"""
 {Colors.CYAN}{Colors.BOLD}
 ╔═══════════════════════════════════════════════════════╗
 ║                                                       ║
-║         🎯      PYTHON EXAM    🎯                    ║
+║         🎯      PYTHON EXAM     🎯                    ║
 ║                                                       ║
-║         Nível: {Colors.YELLOW}{self.current_level or 'Não selecionado':<25}{Colors.CYAN}  ║
+║         Nível: {Colors.YELLOW}{level_display:<25}{Colors.CYAN}  ║
 ║                                                       ║
 ╚═══════════════════════════════════════════════════════╝
 {Colors.END}"""
@@ -53,34 +54,39 @@ class Exam:
     def print_menu(self):
         menu = f"""
 {Colors.WHITE}Selecione o nível do exam:{Colors.END}
+    {Colors.GREEN}[1]{Colors.END} {Colors.GREEN}Start{Colors.END}  - Iniciar o exam (todas as questões)
 
-  {Colors.GREEN}[1]{Colors.END} {Colors.GREEN}Easy{Colors.END}    - Questões básicas
-  {Colors.YELLOW}[2]{Colors.END} {Colors.YELLOW}Medium{Colors.END}  - Questões intermediárias
-  {Colors.RED}[3]{Colors.END} {Colors.RED}Hard{Colors.END}    - Questões avançadas
-
-  {Colors.BLUE}[4]{Colors.END} {Colors.BLUE}Verifier{Colors.END} - Verificar questão atual
-  {Colors.MAGENTA}[5]{Colors.END} {Colors.MAGENTA}Sair{Colors.END}
+    {Colors.BLUE}[2]{Colors.END} {Colors.BLUE}Verifier{Colors.END} - Verificar questão atual
+    {Colors.MAGENTA}[3]{Colors.END} {Colors.MAGENTA}Sair{Colors.END}
 """
         print(menu)
 
     def get_questions_by_level(self, level):
         """Retorna todas as questões disponíveis para um nível"""
-        level_path = self.questions_path / level.lower()
-        if not level_path.exists():
-            return []
-
         questions = []
-        for folder in level_path.iterdir():
-            if folder.is_dir():
-                question_txt = folder / "question.txt"
-                solution_py = folder / "solution.py"
-                if question_txt.exists() and solution_py.exists():
-                    questions.append({
-                        'name': folder.name,
-                        'path': folder,
-                        'question_file': question_txt,
-                        'solution_file': solution_py
-                    })
+
+        if level is None:
+            search_paths = [p for p in self.questions_path.iterdir() if p.is_dir()]
+        else:
+            # Primeiro, tenta o layout antigo: questions/<level>/*
+            level_path = self.questions_path / level.lower()
+            if level_path.exists():
+                search_paths = [p for p in level_path.iterdir() if p.is_dir()]
+            else:
+                # Novo layout: todas as questões em questions/<question_folder>
+                search_paths = [p for p in self.questions_path.iterdir() if p.is_dir()]
+
+        for folder in search_paths:
+            question_txt = folder / "question.txt"
+            solution_py = folder / "solution.py"
+            if question_txt.exists() and solution_py.exists():
+                questions.append({
+                    'name': folder.name,
+                    'path': folder,
+                    'question_file': question_txt,
+                    'solution_file': solution_py
+                })
+
         return questions
 
     def select_level(self):
@@ -91,14 +97,12 @@ class Exam:
 
         choice = input(f"{Colors.CYAN}>>> {Colors.END}").strip()
 
-        levels = {'1': 'Easy', '2': 'Medium', '3': 'Hard'}
-
-        if choice in levels:
-            self.current_level = levels[choice]
+        if choice == '1':
+            self.current_level = None
             self.start_exam()
-        elif choice == '4':
+        elif choice == '2':
             self.verify_current()
-        elif choice == '5':
+        elif choice == '3':
             print(f"\n{Colors.YELLOW}Até logo! 👋{Colors.END}\n")
             sys.exit(0)
         else:
@@ -112,16 +116,18 @@ class Exam:
         questions = self.get_questions_by_level(self.current_level)
 
         if not questions:
-            print(f"\n{Colors.RED}✗ Nenhuma questão encontrada para o nível {self.current_level}{Colors.END}")
-            print(f"{Colors.YELLOW}  Adicione questões na pasta questions/{self.current_level.lower()}/{Colors.END}")
+            level_display = self.current_level or 'Todas'
+            print(f"\n{Colors.RED}✗ Nenhuma questão encontrada para: {level_display}{Colors.END}")
+            print(f"{Colors.YELLOW}  Adicione questões na pasta questions/{Colors.END}")
             input(f"\n{Colors.CYAN}Pressione ENTER para voltar...{Colors.END}")
             self.select_level()
             return
 
         required = len(questions)
 
+        level_display = (self.current_level or 'Todas').upper()
         print(f"\n{Colors.GREEN}{Colors.BOLD}╔═══════════════════════════════════════════════════════╗{Colors.END}")
-        print(f"{Colors.GREEN}{Colors.BOLD}║            INICIANDO EXAM - {self.current_level.upper():^11}             ║{Colors.END}")
+        print(f"{Colors.GREEN}{Colors.BOLD}║            INICIANDO EXAM - {level_display:^11}             ║{Colors.END}")
         print(f"{Colors.GREEN}{Colors.BOLD}╠═══════════════════════════════════════════════════════╣{Colors.END}")
         print(f"{Colors.GREEN}{Colors.BOLD}║  Você precisará resolver {required} questões!{'':13} ║{Colors.END}")
         print(f"{Colors.GREEN}{Colors.BOLD}║  Questões disponíveis: {len(questions):<21} ║{Colors.END}")
@@ -233,9 +239,10 @@ if __name__ == "__main__":
   {Colors.GREEN}[1]{Colors.END} {Colors.GREEN}Verificar{Colors.END} - Testar sua solução
   {Colors.BLUE}[2]{Colors.END} {Colors.BLUE}Abrir pasta{Colors.END} - Mostrar caminho da pasta rendu
   {Colors.YELLOW}[3]{Colors.END} {Colors.YELLOW}Ver enunciado{Colors.END} - Mostrar enunciado novamente
-  {Colors.MAGENTA}[4]{Colors.END} {Colors.MAGENTA}Menu{Colors.END} - Voltar ao menu principal
+    {Colors.MAGENTA}[4]{Colors.END} {Colors.MAGENTA}Menu{Colors.END} - Voltar ao menu principal
+    {Colors.CYAN}[5]{Colors.END} {Colors.CYAN}Next{Colors.END} - Pular para a próxima questão
 
-  {Colors.RED}[0]{Colors.END} {Colors.RED}Sair do exam{Colors.END}
+    {Colors.RED}[0]{Colors.END} {Colors.RED}Sair do exam{Colors.END}
 """
         print(actions)
 
@@ -249,11 +256,34 @@ if __name__ == "__main__":
             self.show_question()
         elif choice == '4':
             self.select_level()
+        elif choice == '5':
+            self.skip_current()
         elif choice == '0':
             print(f"\n{Colors.YELLOW}Saindo do exam...{Colors.END}\n")
             sys.exit(0)
         else:
             self.show_question()
+
+    def skip_current(self):
+        """Pula a questão atual e passa para a próxima"""
+        if not self.current_question:
+            print(f"\n{Colors.RED}✗ Nenhuma questão ativa para pular!{Colors.END}")
+            input(f"\n{Colors.CYAN}Pressione ENTER para voltar...{Colors.END}")
+            self.show_question()
+            return
+
+        # Remove possível pasta rendu da questão atual (opcional)
+        rendu_q_path = self.rendu_path / self.current_question['name']
+        if rendu_q_path.exists():
+            try:
+                shutil.rmtree(rendu_q_path)
+            except Exception:
+                pass
+
+        if self.used_questions:
+            self.next_question()
+        else:
+            self.exam_completed()
 
     def verify_current(self):
         """Verifica se a solução atual está correta"""

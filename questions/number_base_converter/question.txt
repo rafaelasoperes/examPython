@@ -11,7 +11,6 @@ Write a function:
 def number_base_converter(s: str, base_from: int, base_to: int) -> str:
 
 
-
 Examples
 
 1.

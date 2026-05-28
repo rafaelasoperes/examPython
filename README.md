@@ -1,14 +1,18 @@
 # Python Exam
 
-Projeto inspirado no estilo do **ExamShell**, criado para praticar exercícios de Python por nível de dificuldade.
+Projeto inspirado no estilo do **ExamShell**, criado para praticar exercícios de Python.
 
-O objetivo é permitir que o usuário escolha um nível, receba uma questão, implemente a solução em um arquivo gerado automaticamente e depois valide a resposta com testes.
+Este repositório fornece um sistema simples para gerar questões, implementar soluções e verificar automaticamente usando testes.
+
+Principais diferenças nesta versão
+- O menu não usa mais níveis (Easy/Medium/Hard). Existe uma única opção `Start` que inicia o exam com todas as questões encontradas em `questions/`.
+- As questões agora ficam diretamente em `questions/<nome_da_questao>/` (layout plano). Isso facilita adicionar ou reorganizar exercícios.
 
 ---
 
-## Instrução
+## Como executar
 
-Para iniciar o projeto, execute:
+Usando o Makefile:
 
 ```bash
 make
@@ -20,317 +24,97 @@ ou:
 make run
 ```
 
-Também é possível rodar diretamente com Python:
+Diretamente com Python:
 
 ```bash
 python3 exam.py
 ```
 
-Ao iniciar o programa, será exibido um menu com os níveis disponíveis:
+Ao iniciar, o programa mostra um menu com opções reduzidas:
 
 ```text
-[1] Easy
-[2] Medium
-[3] Hard
-[4] Verifier
-[5] Sair
+[1] Start   - Iniciar o exam (todas as questões)
+[2] Verifier - Verificar questão atual
+[3] Sair
 ```
 
-Escolha o nível desejado e o sistema irá sortear uma questão disponível naquele nível.
-
-Depois que a questão for selecionada, o projeto cria uma pasta dentro de `rendu/` contendo:
-
-```text
-question.txt
-solution.py
-```
-
-O arquivo `question.txt` contém o enunciado da questão.
-
-O arquivo `solution.py` é onde a solução deve ser implementada.
-
-Exemplo:
-
-```text
-rendu/py_mirror_matrix/
-├── question.txt
-└── solution.py
-```
-
-Após escrever a solução, volte ao terminal do exam e escolha a opção:
-
-```text
-[1] Verificar
-```
-
-Se todos os testes passarem, o sistema avança para a próxima questão.
-
-Se algum teste falhar, será exibido o erro para que a solução possa ser corrigida.
+Escolha `Start` para iniciar o exam — o sistema carregará todas as pastas dentro de `questions/`, sorteará a ordem e criará uma pasta `rendu/<nome_da_questao>/` para cada questão conforme forem sorteadas.
 
 ---
 
-## Descrição
+## Estrutura esperada de uma questão (layout plano)
 
-Este projeto é um sistema simples de exam em Python.
+Coloque cada questão como uma pasta em `questions/` com estes arquivos:
 
-Ele organiza exercícios em três níveis:
-
-```text
-Easy
-Medium
-Hard
+```
+questions/
+├── echo_validator/
+│   ├── question.txt
+│   ├── solution.py
+│   └── tests.py
+├── mirror_matrix/
+│   ├── question.txt
+│   ├── solution.py
+│   └── tests.py
+└── ... (outras questões)
 ```
 
-Cada nível possui suas próprias questões dentro da pasta `questions/`.
+- `question.txt` — enunciado da questão.
+- `solution.py` — solução de referência (o sistema lê essa função para obter a assinatura esperada e também para referência).
+- `tests.py` — lista `TESTS` com casos usados pelo verificador.
 
-A estrutura esperada para uma questão é:
-
-```text
-questions/easy/nome_da_questao/
-├── question.txt
-├── solution.py
-└── tests.py
-```
-
-Onde:
-
-- `question.txt` contém o enunciado da questão.
-- `solution.py` contém a solução de referência usada pelo sistema.
-- `tests.py` contém os testes usados para validar a resposta do usuário.
-
-Durante o exam, o usuário não edita os arquivos da pasta `questions/`.
-
-A solução do usuário sempre deve ser feita dentro da pasta `rendu/`, no arquivo `solution.py` gerado automaticamente para a questão atual.
-
-O sistema compara a resposta do usuário com os testes definidos para aquela questão.
+Durante o exam, o usuário edita apenas o arquivo `rendu/<nome_da_questao>/solution.py` criado automaticamente.
 
 ---
 
-## Recursos
+## Fluxo básico
 
-### Seleção por nível
+1. Executar `python3 exam.py` ou `make run`.
+2. Escolher `[1] Start` para iniciar — o sistema sorteará as questões e criará `rendu/<questao>/`.
+3. Editar `rendu/<questao>/solution.py` com sua implementação.
+4. No menu do exam escolher `Verifier` para rodar os testes da questão atual.
+5. Se todos os testes passarem, o exam avança para a próxima questão; caso contrário, ajuste a sua solução e verifique novamente.
 
-O usuário pode escolher entre:
+Observação sobre pular questões (`Next`):
 
-```text
-Easy
-Medium
-Hard
-```
+- No menu de ações da questão existe a opção `Next` (atalho `5`). Ao escolher `Next`, o sistema pula para a próxima questão sorteada sem executar os testes da questão atual. Por padrão ele remove a pasta `rendu/<nome_da_questao>/` gerada para a questão pulada. Use esta opção quando quiser ignorar temporariamente uma questão.
 
-Cada nível possui uma lista própria de exercícios.
-
----
-
-### Sorteio de questões
-
-Ao iniciar um nível, o sistema busca as questões disponíveis na pasta correspondente e sorteia a ordem em que elas serão resolvidas.
-
-Exemplo:
-
-```text
-questions/easy/
-questions/medium/
-questions/hard/
-```
 
 ---
 
-### Geração automática da solução
+## Traces e saída
 
-Para cada questão, o sistema cria automaticamente uma pasta dentro de `rendu/`.
+Ao verificar uma questão, o sistema grava traces em `traces/<nome_da_questao>/`:
 
-Dentro dela, são criados os arquivos necessários para o aluno resolver a questão:
+- `trace_ok.txt` — salvo quando todos os testes passaram.
+- `trace_error.txt` — salvo quando houve falha/erro.
 
-```text
-rendu/nome_da_questao/question.txt
-rendu/nome_da_questao/solution.py
-```
-
-O arquivo `solution.py` já vem com a assinatura da função esperada.
-
-Exemplo:
-
-```python
-def mirror_matrix(matrix: list[list]) -> list[list]:
-    # Sua solução aqui
-    pass
-```
+Esses arquivos ajudam a diagnosticar problemas de implementação.
 
 ---
 
-### Verificação automática
-
-O sistema executa os testes definidos no arquivo `tests.py` da questão.
-
-Se a saída da função do usuário for igual ao resultado esperado, o teste passa.
-
-Exemplo de resultado:
-
-```text
-✓ Teste 1: PASSED
-✓ Teste 2: PASSED
-✓ Teste 3: PASSED
-```
-
-Se a resposta estiver incorreta, o sistema mostra o valor esperado e o valor recebido.
-
-Exemplo:
-
-```text
-✗ Teste 1: FAILED
-Esperado: [3, 2, 1]
-Recebido: [1, 2, 3]
-```
-
----
-
-### Traces de execução
-
-Quando a verificação é executada, o sistema pode salvar arquivos de trace dentro da pasta `traces/`.
-
-Exemplo:
-
-```text
-traces/nome_da_questao/trace_ok.txt
-traces/nome_da_questao/trace_error.txt
-```
-
-Esses arquivos ajudam a entender quais testes passaram ou falharam.
-
-A pasta `traces/` não precisa existir inicialmente. Ela será criada automaticamente quando o sistema precisar salvar um trace.
-
----
-
-### Comandos do Makefile
-
-O projeto possui um `Makefile` para facilitar o uso.
-
-Comandos disponíveis:
+## Makefile — principais comandos
 
 ```bash
-make
-```
-
-Executa o exam.
-
-```bash
-make run
-```
-
-Executa o arquivo principal `exam.py`.
-
-```bash
-make check
-```
-
-Verifica se o arquivo `exam.py` possui erros de sintaxe.
-
-```bash
-make clean
-```
-
-Remove os arquivos gerados em `rendu/`, remove `traces/` e limpa caches do Python.
-
-```bash
-make fclean
-```
-
-Executa uma limpeza mais completa, removendo também caches de ferramentas como `pytest`, `mypy` e `ruff`, caso existam.
-
-```bash
-make re
-```
-
-Limpa o projeto e executa o exam novamente.
-
-```bash
-make help
-```
-
-Mostra a lista de comandos disponíveis.
-
----
-
-## Estrutura do projeto
-
-```text
-.
-├── Makefile
-├── README.md
-├── exam.py
-├── questions/
-│   ├── easy/
-│   ├── medium/
-│   └── hard/
-├── rendu/
-└── traces/
-```
-
-> Observação: a pasta `traces/` pode não existir inicialmente. Ela será criada automaticamente quando houver execução de testes com geração de trace.
-
----
-
-## Exemplo de questão
-
-Uma questão deve seguir este formato:
-
-```text
-questions/easy/py_mirror_matrix/
-├── question.txt
-├── solution.py
-└── tests.py
-```
-
-Exemplo de `question.txt`:
-
-```text
-A matrix is considered mirrored if each of its rows has been reversed from its original order.
-
-Write a function:
-
-def mirror_matrix(matrix: list[list]) -> list[list]
-
-The function should return a new matrix where each row has its elements in reversed order.
-```
-
-Exemplo de `solution.py` de referência:
-
-```python
-def mirror_matrix(matrix: list[list]) -> list[list]:
-    return [row[::-1] for row in matrix]
-```
-
-Exemplo de `tests.py`:
-
-```python
-TESTS = [
-    {
-        "args": [[[1, 2, 3], [4, 5, 6]]],
-        "expected": [[3, 2, 1], [6, 5, 4]]
-    },
-    {
-        "args": [[["a", "b"], ["c", "d"]]],
-        "expected": [["b", "a"], ["d", "c"]]
-    },
-    {
-        "args": [[]],
-        "expected": []
-    }
-]
+make         # Executa o exam
+make run     # Executa exam.py
+make check   # Verifica sintaxe de exam.py
+make clean   # Remove rendu/ e traces/
+make fclean  # Limpeza completa
+make re      # Limpa e executa novamente
+make help    # Mostra os comandos
 ```
 
 ---
 
 ## Objetivo
 
-O objetivo do projeto é criar um ambiente simples para treinar lógica de programação com Python, simulando uma experiência de exam.
+Prover um ambiente leve para praticar problemas de programação em Python, com geração automática de esqueleto de solução, testes e traces.
 
-Ele pode ser usado para:
+Se quiser, eu posso:
 
-- praticar exercícios por dificuldade;
-- validar soluções automaticamente;
-- organizar questões por nível;
-- gerar arquivos de resposta para o aluno;
-- salvar traces de testes;
-- evoluir para um sistema maior de avaliação.
+- ajustar o README com um exemplo de adição de nova questão;
+- gerar um script `scripts/import_questions.sh` para mover antigas pastas por nível (opcional);
+- executar um `make check` para garantir que `exam.py` está sem erros.
+
+E aí, quer que eu acrescente algum exemplo específico ou rode o `make check` agora? 
