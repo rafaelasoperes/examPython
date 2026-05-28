@@ -4,9 +4,7 @@ Projeto inspirado no estilo do **ExamShell**, criado para praticar exercícios d
 
 Este repositório fornece um sistema simples para gerar questões, implementar soluções e verificar automaticamente usando testes.
 
-Principais diferenças nesta versão
-- O menu não usa mais níveis (Easy/Medium/Hard). Existe uma única opção `Start` que inicia o exam com todas as questões encontradas em `questions/`.
-- As questões agora ficam diretamente em `questions/<nome_da_questao>/` (layout plano). Isso facilita adicionar ou reorganizar exercícios.
+- As questões ficam diretamente em `questions/<nome_da_questao>/` (layout plano). Isso facilita adicionar ou reorganizar exercícios.
 
 ---
 
@@ -111,10 +109,3 @@ make help    # Mostra os comandos
 
 Prover um ambiente leve para praticar problemas de programação em Python, com geração automática de esqueleto de solução, testes e traces.
 
-Se quiser, eu posso:
-
-- ajustar o README com um exemplo de adição de nova questão;
-- gerar um script `scripts/import_questions.sh` para mover antigas pastas por nível (opcional);
-- executar um `make check` para garantir que `exam.py` está sem erros.
-
-E aí, quer que eu acrescente algum exemplo específico ou rode o `make check` agora? 

@@ -55,9 +55,7 @@ class Exam:
         menu = f"""
 {Colors.WHITE}Selecione o nível do exam:{Colors.END}
     {Colors.GREEN}[1]{Colors.END} {Colors.GREEN}Start{Colors.END}  - Iniciar o exam (todas as questões)
-
-    {Colors.BLUE}[2]{Colors.END} {Colors.BLUE}Verifier{Colors.END} - Verificar questão atual
-    {Colors.MAGENTA}[3]{Colors.END} {Colors.MAGENTA}Sair{Colors.END}
+    {Colors.MAGENTA}[2]{Colors.END} {Colors.MAGENTA}Sair{Colors.END}
 """
         print(menu)
 
@@ -68,12 +66,10 @@ class Exam:
         if level is None:
             search_paths = [p for p in self.questions_path.iterdir() if p.is_dir()]
         else:
-            # Primeiro, tenta o layout antigo: questions/<level>/*
             level_path = self.questions_path / level.lower()
             if level_path.exists():
                 search_paths = [p for p in level_path.iterdir() if p.is_dir()]
             else:
-                # Novo layout: todas as questões em questions/<question_folder>
                 search_paths = [p for p in self.questions_path.iterdir() if p.is_dir()]
 
         for folder in search_paths:
@@ -101,8 +97,6 @@ class Exam:
             self.current_level = None
             self.start_exam()
         elif choice == '2':
-            self.verify_current()
-        elif choice == '3':
             print(f"\n{Colors.YELLOW}Até logo! 👋{Colors.END}\n")
             sys.exit(0)
         else:
@@ -237,12 +231,12 @@ if __name__ == "__main__":
 {Colors.WHITE}Ações:{Colors.END}
 
   {Colors.GREEN}[1]{Colors.END} {Colors.GREEN}Verificar{Colors.END} - Testar sua solução
-  {Colors.BLUE}[2]{Colors.END} {Colors.BLUE}Abrir pasta{Colors.END} - Mostrar caminho da pasta rendu
+  {Colors.CYAN}[2]{Colors.END} {Colors.CYAN}Next{Colors.END} - Pular para a próxima questão
   {Colors.YELLOW}[3]{Colors.END} {Colors.YELLOW}Ver enunciado{Colors.END} - Mostrar enunciado novamente
-    {Colors.MAGENTA}[4]{Colors.END} {Colors.MAGENTA}Menu{Colors.END} - Voltar ao menu principal
-    {Colors.CYAN}[5]{Colors.END} {Colors.CYAN}Next{Colors.END} - Pular para a próxima questão
+  {Colors.MAGENTA}[4]{Colors.END} {Colors.MAGENTA}Menu{Colors.END} - Voltar ao menu principal
+  {Colors.BLUE}[5]{Colors.END} {Colors.BLUE}Abrir pasta{Colors.END} - Mostrar caminho da pasta rendu
 
-    {Colors.RED}[0]{Colors.END} {Colors.RED}Sair do exam{Colors.END}
+  {Colors.RED}[0]{Colors.END} {Colors.RED}Sair do exam{Colors.END}
 """
         print(actions)
 
@@ -251,13 +245,13 @@ if __name__ == "__main__":
         if choice == '1':
             self.verify_current()
         elif choice == '2':
-            self.open_rendu_folder()
+            self.skip_current()
         elif choice == '3':
             self.show_question()
         elif choice == '4':
             self.select_level()
         elif choice == '5':
-            self.skip_current()
+            self.open_rendu_folder()
         elif choice == '0':
             print(f"\n{Colors.YELLOW}Saindo do exam...{Colors.END}\n")
             sys.exit(0)
