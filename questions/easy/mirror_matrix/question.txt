@@ -1,0 +1,31 @@
+A matrix is considered mirrored if each of its rows has been reversed from its original order.
+
+Write a function:
+```
+def mirror_matrix(matrix: list[list]) -> list[list]
+```
+The function should return a new matrix where each row (inner list) has its elements in reversed order.
+
+**Examples:**
+
+1.
+Input: `matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]`
+Output: `[[3, 2, 1], [6, 5, 4], [9, 8, 7]]`
+Explanation: Each row is reversed independently.
+
+2.
+Input: `matrix = [["a", "b"], ["c", "d"]]`
+Output: `[["b", "a"], ["d", "c"]]`
+Explanation: Works with any element type, not just integers.
+
+3.
+Input: `matrix = [[42]]`
+Output: `[[42]]`
+Explanation: A single-element row reversed is itself.
+
+4.
+Input: `matrix = []`
+Output: `[]`
+Explanation: An empty matrix returns an empty matrix.
+
+**Note:** Description based on exam logic, not a literal transcription.
